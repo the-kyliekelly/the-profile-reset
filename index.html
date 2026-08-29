@@ -1,0 +1,487 @@
+<title>The Profile Reset Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Work+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-soft: #fdf6f7;
+    --card-bg: #ffffff;
+    --card-border: #f0dfe3;
+    --text: #070605;
+    --text-muted: #8a7d80;
+    --accent: #e579df;
+    --accent-soft: #d5b9db;
+    --accent-wash: #fbeefa;
+    --accent-contrast: #ffffff;
+    --checkbox-border: #e3d3d7;
+    --rule: #f0dfe3;
+    --gold: #e8b34f;
+    --expect-bg: #eef2f5;
+    --expect-text: #6d7d8c;
+    --skip-bg: #fdeeec;
+    --skip-text: #c96b52;
+    --danger: #c65c4a;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15100f; --bg-soft: #1c1516; --card-bg: #1f1819; --card-border: #352a2c;
+      --text: #f6efee; --text-muted: #b9aaac; --accent: #e579df; --accent-soft: #4a3540;
+      --accent-wash: #2a1f28; --accent-contrast: #15100f; --checkbox-border: #4a3d3f; --rule: #352a2c;
+      --gold: #e8b34f; --expect-bg: #1c2429; --expect-text: #9db0bd; --skip-bg: #2b1e1c; --skip-text: #e08b73;
+      --danger: #e08b73;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #15100f; --bg-soft: #1c1516; --card-bg: #1f1819; --card-border: #352a2c;
+    --text: #f6efee; --text-muted: #b9aaac; --accent: #e579df; --accent-soft: #4a3540;
+    --accent-wash: #2a1f28; --accent-contrast: #15100f; --checkbox-border: #4a3d3f; --rule: #352a2c;
+    --gold: #e8b34f; --expect-bg: #1c2429; --expect-text: #9db0bd; --skip-bg: #2b1e1c; --skip-text: #e08b73;
+    --danger: #e08b73;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Work Sans', 'Helvetica Neue', sans-serif; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 56px 40px 0; position: relative; }
+
+  .eyebrow { font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin: 0 0 14px; }
+  h1 { font-family: 'Playfair Display', Georgia, serif; font-weight: 700; font-size: clamp(2rem, 5vw, 2.75rem); line-height: 1.12; margin: 0 0 16px; text-wrap: balance; }
+  h1 em { font-style: italic; font-weight: 400; color: var(--accent); }
+  .lede { font-size: 1.05rem; color: var(--text-muted); max-width: 52ch; margin: 0 0 28px; }
+
+  .start-here { display: flex; gap: 14px; align-items: flex-start; background: var(--accent-wash); border-radius: 12px; padding: 18px 22px; margin: 0 0 36px; }
+  .start-here .glyph { font-size: 1.3rem; line-height: 1.4; }
+  .start-here p { margin: 0; font-size: 0.92rem; color: var(--text); opacity: 0.9; max-width: 62ch; }
+  .start-here strong { font-weight: 600; }
+
+  .stats { display: flex; gap: 28px; margin-bottom: 12px; flex-wrap: wrap; }
+  .stat { font-variant-numeric: tabular-nums; }
+  .stat .num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; display: block; line-height: 1; color: var(--text); }
+  .stat .num.accent { color: var(--accent); }
+  .stat .label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); display: block; margin-top: 4px; }
+
+  .progress-track { height: 8px; border-radius: 999px; background: var(--accent-wash); overflow: hidden; margin: 20px 0 48px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-soft), var(--accent)); border-radius: 999px; width: 0%; transition: width 0.5s cubic-bezier(.4,0,.2,1); }
+  @media (prefers-reduced-motion: reduce) { .progress-fill { transition: none; } }
+
+  .days { display: flex; flex-direction: column; gap: 20px; }
+  .day { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px 32px; transition: box-shadow 0.3s ease, border-color 0.3s ease; }
+  .day.complete { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+  .day-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; cursor: pointer; }
+  .day-title-group { display: flex; align-items: center; gap: 12px; }
+  .day-num { font-family: 'Work Sans', sans-serif; font-weight: 700; font-size: 0.72rem; letter-spacing: 0.09em; text-transform: uppercase; color: var(--accent); background: var(--accent-wash); padding: 4px 10px; border-radius: 999px; white-space: nowrap; }
+  .day-title { font-family: 'Playfair Display', serif; font-weight: 700; font-size: 1.3rem; margin: 0; }
+  .day-meta { display: flex; align-items: center; gap: 14px; }
+  .day-count { font-size: 0.78rem; color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .day-time { font-size: 0.7rem; color: var(--text-muted); opacity: 0.75; white-space: nowrap; }
+  .chevron { width: 18px; height: 18px; color: var(--text-muted); transition: transform 0.25s ease; flex: 0 0 auto; }
+  .day.is-collapsed .chevron { transform: rotate(-90deg); }
+
+  .day-badge { display: none; align-items: center; gap: 6px; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin: 14px 0 0; }
+  .day.complete .day-badge { display: flex; }
+
+  .day-body { overflow: hidden; max-height: 2000px; opacity: 1; transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.35s ease; margin-top: 18px; }
+  .day.is-collapsed .day-body { max-height: 0; opacity: 0; margin-top: 0; }
+  @media (prefers-reduced-motion: reduce) { .day-body { transition: none; } }
+
+  .day-sub { font-size: 0.92rem; color: var(--text-muted); margin: 0 0 16px; max-width: 62ch; }
+
+  .note { border-left: 3px solid transparent; border-radius: 10px; padding: 16px 18px; margin: 0 0 14px; font-size: 0.9rem; }
+  .note .note-label { display: block; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .note.expect { background: var(--expect-bg); border-left-color: var(--expect-text); }
+  .note.expect .note-label { color: var(--expect-text); }
+  .note.skip { background: var(--skip-bg); border-left-color: var(--skip-text); }
+  .note.skip .note-label { color: var(--skip-text); }
+  .note p { margin: 0; color: var(--text); opacity: 0.92; max-width: 62ch; }
+
+  .section-label { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin: 18px 0 8px; }
+  .section-label:first-of-type { margin-top: 4px; }
+  .section-label.watch { color: var(--accent); }
+  .section-label.watch svg { fill: var(--accent); }
+
+  ul.tasks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .task { display: flex; align-items: flex-start; gap: 12px; padding: 9px 4px; border-radius: 8px; cursor: pointer; user-select: none; }
+  .task:hover { background: var(--accent-wash); }
+  .task input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .box { flex: 0 0 20px; width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid var(--checkbox-border); margin-top: 1px; display: flex; align-items: center; justify-content: center; transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease; }
+  .task input:checked + .box { background: var(--accent); border-color: var(--accent); transform: scale(1.05); }
+  .box svg { width: 12px; height: 12px; opacity: 0; transform: scale(0.6); transition: opacity 0.12s ease, transform 0.12s ease; }
+  .task input:checked + .box svg { opacity: 1; transform: scale(1); }
+  .task input:focus-visible + .box { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .task-label { font-size: 0.96rem; padding-top: 1px; }
+  .task input:checked ~ .task-label { color: var(--text-muted); text-decoration: line-through; text-decoration-color: var(--checkbox-border); }
+
+  .video-chip { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--accent-wash); font-size: 0.9rem; margin-bottom: 6px; }
+  .video-chip svg { flex: 0 0 auto; fill: var(--accent); }
+  .video-chip:last-of-type { margin-bottom: 0; }
+
+  .foot-top { margin-top: 44px; padding-top: 28px; border-top: 1px solid var(--rule); display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .foot-top p { font-size: 0.85rem; color: var(--text-muted); margin: 0; max-width: 42ch; }
+  .reset-btn { font-family: 'Work Sans', sans-serif; font-weight: 600; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; background: transparent; color: var(--text-muted); border: 1.5px solid var(--card-border); border-radius: 8px; padding: 10px 18px; cursor: pointer; white-space: nowrap; transition: color 0.15s ease, border-color 0.15s ease; }
+  .reset-btn:hover { border-color: var(--text-muted); color: var(--text); }
+  .reset-btn.confirming { color: var(--danger); border-color: var(--danger); }
+
+  .next-step {
+    margin-top: 40px; padding: 24px 28px; border-radius: 12px;
+    background: var(--bg-soft); text-align: center;
+  }
+  .next-step p { margin: 0; font-size: 0.92rem; color: var(--text-muted); max-width: 52ch; margin: 0 auto; }
+  .next-step a { color: var(--accent); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--accent-soft); }
+  .next-step a:hover { border-bottom-color: var(--accent); }
+
+  .site-footer {
+    margin-top: 32px; padding: 28px 0 48px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+  }
+  .site-footer nav { display: flex; gap: 22px; }
+  .site-footer a { color: var(--text-muted); font-size: 0.8rem; text-decoration: none; }
+  .site-footer a:hover { color: var(--text); }
+  .site-footer .copyright { font-size: 0.78rem; color: var(--text-muted); opacity: 0.8; }
+
+  .celebrate-backdrop { position: fixed; inset: 0; background: rgba(7, 6, 5, 0.45); display: flex; align-items: center; justify-content: center; padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.25s ease; z-index: 50; }
+  .celebrate-backdrop.show { opacity: 1; pointer-events: auto; }
+  .celebrate-card { background: var(--card-bg); border-radius: 18px; max-width: 420px; width: 100%; padding: 40px 36px 32px; text-align: center; position: relative; transform: translateY(14px) scale(0.97); transition: transform 0.3s cubic-bezier(.34,1.56,.64,1); box-shadow: 0 24px 60px rgba(7,6,5,0.25); }
+  .celebrate-backdrop.show .celebrate-card { transform: translateY(0) scale(1); }
+  @media (prefers-reduced-motion: reduce) { .celebrate-backdrop, .celebrate-card { transition: none; } }
+  .celebrate-close { position: absolute; top: 14px; right: 14px; width: 28px; height: 28px; border-radius: 50%; border: none; background: var(--accent-wash); color: var(--text-muted); cursor: pointer; font-size: 1rem; line-height: 1; }
+  .celebrate-icon { font-size: 2.2rem; margin-bottom: 6px; }
+  .celebrate-title { font-family: 'Playfair Display', serif; font-weight: 700; font-style: italic; font-size: 1.6rem; margin: 0 0 14px; color: var(--text); }
+  .celebrate-body { font-size: 0.98rem; color: var(--text-muted); margin: 0 0 26px; }
+  .celebrate-btn { font-family: 'Work Sans', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; background: var(--accent); color: var(--accent-contrast); border: none; border-radius: 999px; padding: 14px 30px; cursor: pointer; }
+  .celebrate-btn:hover { filter: brightness(1.05); }
+
+  #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Break Up With Instagram — Companion Tool</p>
+  <h1>The Profile Reset,<br><em>five steps, start to finish.</em></h1>
+  <p class="lede">Watch the lesson, then do the thing, check it off, move on.</p>
+
+  <div class="start-here">
+    <span class="glyph">👋</span>
+    <p><strong>Start here.</strong> This is your step by step for rebuilding your Instagram profile from the course. Work through each step in order, watch the lesson listed, complete the tasks underneath it, then move to the next one. Nothing to figure out, just follow it down the page.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="num accent" id="stat-pct">0%</span><span class="label">Complete</span></div>
+    <div class="stat"><span class="num" id="stat-count">0 / 23</span><span class="label">Tasks done</span></div>
+    <div class="stat"><span class="num">5</span><span class="label">Steps total</span></div>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+
+  <div class="days" id="days"></div>
+
+  <div class="foot-top">
+    <p>Your progress is saved right in this browser, come back to it whenever you're ready for the next step.</p>
+    <button class="reset-btn" id="reset-btn" type="button">Start over</button>
+  </div>
+
+  <div class="next-step">
+    <p>Once your profile's doing its job, the natural next question is how to grow without relying on it at all. That's exactly what <a href="https://50aday.kyliekelly.com/checkout" target="_blank" rel="noopener">50 A Day</a> teaches, or browse everything in <a href="https://shop.kyliekelly.com/" target="_blank" rel="noopener">the shop</a>.</p>
+  </div>
+
+  <div class="site-footer">
+    <span class="copyright">© 2026 Kylie Kelly. All rights reserved.</span>
+    <nav>
+      <a href="https://kyliekelly.com/" target="_blank" rel="noopener">kyliekelly.com</a>
+      <a href="https://kyliekelly.com/privacy-policy" target="_blank" rel="noopener">Privacy Policy</a>
+    </nav>
+  </div>
+</div>
+
+<div class="celebrate-backdrop" id="celebrate-backdrop">
+  <div class="celebrate-card">
+    <button class="celebrate-close" id="celebrate-close" aria-label="Close">✕</button>
+    <div class="celebrate-icon" id="celebrate-icon">✨</div>
+    <h2 class="celebrate-title" id="celebrate-title">Step 1 done!</h2>
+    <p class="celebrate-body" id="celebrate-body"></p>
+    <button class="celebrate-btn" id="celebrate-btn">Keep going →</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+  const PLAY_ICON = '<svg width="13" height="13" viewBox="0 0 24 24"><path d="M6 4l14 8-14 8V4z"/></svg>';
+  const CHECK_ICON = '<svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.2L4.6 8.8L10 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const DOT_ICON = '<svg width="6" height="6" viewBox="0 0 6 6"><circle cx="3" cy="3" r="3" fill="currentColor"/></svg>';
+  const CHEVRON_ICON = '<svg class="chevron" viewBox="0 0 20 20" fill="none"><path d="M5 7.5L10 12.5L15 7.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  const PLAN = [
+    {
+      title: "Reset your mindset",
+      time: "~15 min",
+      sub: "Get honest about where Instagram actually stands in your business before you touch a single thing.",
+      expect: "This step is just honesty, not building. You're not fixing anything yet, just looking clearly at what Instagram has actually been doing for your business.",
+      skip: "The screenshot and the data pull feel optional. They're not, this is the only real before you'll have once your profile's rebuilt.",
+      watch: ["Module 1: The Instagram Lie", "Module 2: Instagram's Actual Job"],
+      tasks: [
+        "Screenshot your current profile, this is your before",
+        "Pull your last 30 to 90 days of Instagram insights",
+        "Ask yourself honestly: if Instagram disappeared tomorrow, would your business still grow?"
+      ],
+      celebrate: "You've looked at your real numbers and asked the one question that actually matters. Everything from here builds on that honesty."
+    },
+    {
+      title: "Build your bio",
+      time: "~20 min",
+      sub: "Your photo and your bio, the first two things anyone sees.",
+      expect: "Small pieces, but they carry more weight than anything else on your profile, this is the whole first impression.",
+      skip: "Don't skip the five second test. It's tempting to write your bio and move straight on, but this is the step that actually tells you whether it's working, not just whether you like how it reads.",
+      watch: ["Module 3a: Your Profile Photo", "Module 3b: Writing Your Bio"],
+      tasks: [
+        "Update your profile photo, warm and approachable",
+        "Write your bio: who you are, who you help, what result, what's next",
+        "Run the five second test on your bio alone"
+      ],
+      celebrate: "Your photo and bio are live. The first impression is sorted, before anyone reads another word, they already know who you are."
+    },
+    {
+      title: "Highlights and pin posts",
+      time: "~30 min",
+      sub: "The rest of the profile build.",
+      expect: "This is the biggest step in the plan on purpose, it's where the rest of the profile actually gets built. Give it real time, not a rushed ten minutes.",
+      skip: "Order matters on your highlights. It's easy to build them in whatever order you thought of them and call it done, but whichever one comes first is doing the most work, don't leave that to chance.",
+      watch: ["Module 3c: Building Your Highlights", "Module 3d: Your Three Pin Posts"],
+      tasks: [
+        "List the questions your ideal client naturally has landing on your profile",
+        "Build one highlight answering each question",
+        "Add one highlight built purely on credibility",
+        "Create your three pin posts in sequence: who and the result, how you help, where next",
+        "Run the five second test on the whole profile"
+      ],
+      celebrate: "Your whole profile is built now, photo, bio, highlights, pin posts, all telling one clear story."
+    },
+    {
+      title: "Build your static feed",
+      time: "~30 min",
+      sub: "Design the grid, pick your number, there's no magic to it.",
+      expect: "The most visual, most creative step, and also the one people stall on most, because it feels like it has to be perfect. It doesn't.",
+      skip: "Don't get stuck choosing your number. Three, six, nine, twelve, any of them work, pick one and move, you can always rebuild it later once you've actually seen it live.",
+      watch: ["Module 4a: What Goes In The Grid", "Module 4b: How To Build It"],
+      tasks: [
+        "Decide your number, three, six, nine, whatever fits what you've got to say",
+        "Design your grid in Canva",
+        "Split it with an image splitter"
+      ],
+      celebrate: "Your grid is designed and ready to post. The hardest part, the creative work, is behind you."
+    },
+    {
+      title: "Post it and let it work",
+      time: "~15 min",
+      sub: "Close it out and set the follow through.",
+      expect: "Once this is posted, the building part of this course is finished. What's left is mostly mindset, letting it sit without touching it.",
+      skip: "Set the 90 day reminder before you close this tab. Without it, it's easy to start fiddling with your grid again out of habit, not because anything's actually wrong.",
+      watch: ["Module 5: What I Actually Do Each Week Now", "Module 6: The Visibility Loop"],
+      tasks: [
+        "Post your grid, in order",
+        "Set up one simple keyword trigger, native or a tool, whichever you prefer",
+        "Set a reminder to revisit this in 90 days, not before"
+      ],
+      celebrate: "That's the whole system live. Your profile introduces you, your feed backs it up, and none of it needs you to post again to keep working. From here, it's just living your life while it does its job.",
+      finalDay: true
+    }
+  ];
+
+  const STORAGE_KEY = "bwi-profile-reset-progress";
+  const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+  const daysEl = document.getElementById("days");
+  let totalTasks = 0;
+  PLAN.forEach(d => totalTasks += d.tasks.length);
+  document.getElementById("stat-count").textContent = "0 / " + totalTasks;
+
+  PLAN.forEach((day, di) => {
+    const card = document.createElement("div");
+    card.className = "day";
+    card.dataset.day = di;
+
+    const watchHtml = day.watch.map(w => `<div class="video-chip">${PLAY_ICON}<span>${w}</span></div>`).join("");
+    const tasksHtml = day.tasks.map((t, ti) => {
+      const id = "d" + di + "t" + ti;
+      const checked = state[id] ? "checked" : "";
+      return `<li class="task" data-id="${id}">
+        <input type="checkbox" id="${id}" ${checked}>
+        <label class="box" for="${id}">${CHECK_ICON}</label>
+        <label class="task-label" for="${id}">${t}</label>
+      </li>`;
+    }).join("");
+
+    card.innerHTML = `
+      <div class="day-head" data-toggle>
+        <div class="day-title-group">
+          <span class="day-num">Step ${di + 1}</span>
+          <h2 class="day-title">${day.title}</h2>
+        </div>
+        <div class="day-meta">
+          <span class="day-count" data-count>0 / ${day.tasks.length}</span>
+          <span class="day-time">${day.time}</span>
+          ${CHEVRON_ICON}
+        </div>
+      </div>
+      <div class="day-body">
+        <p class="day-badge">${DOT_ICON} Step complete</p>
+        <p class="day-sub">${day.sub}</p>
+        <div class="note expect"><span class="note-label">What to expect</span><p>${day.expect}</p></div>
+        <p class="section-label watch">${PLAY_ICON} Watch</p>
+        ${watchHtml}
+        <div class="note skip"><span class="note-label">Don't skip this</span><p>${day.skip}</p></div>
+        <p class="section-label">${DOT_ICON} Now do this</p>
+        <ul class="tasks">${tasksHtml}</ul>
+      </div>
+    `;
+    daysEl.appendChild(card);
+
+    card.querySelector("[data-toggle]").addEventListener("click", () => {
+      card.classList.toggle("is-collapsed");
+    });
+  });
+
+  function updateAll(trigger) {
+    let doneTotal = 0;
+    document.querySelectorAll(".day").forEach((card, di) => {
+      const boxes = card.querySelectorAll('input[type="checkbox"]');
+      let done = 0;
+      boxes.forEach(b => { if (b.checked) done++; });
+      doneTotal += done;
+      card.querySelector("[data-count]").textContent = done + " / " + boxes.length;
+      const wasComplete = card.classList.contains("complete");
+      const isComplete = done === boxes.length;
+      card.classList.toggle("complete", isComplete);
+      if (trigger && isComplete && !wasComplete) {
+        celebrate(di);
+        card.classList.add("is-collapsed");
+      }
+    });
+
+    const pct = totalTasks ? Math.round((doneTotal / totalTasks) * 100) : 0;
+    document.getElementById("stat-pct").textContent = pct + "%";
+    document.getElementById("stat-count").textContent = doneTotal + " / " + totalTasks;
+    document.getElementById("progress-fill").style.width = pct + "%";
+  }
+
+  daysEl.addEventListener("click", (e) => {
+    const task = e.target.closest(".task");
+    if (task) e.stopPropagation();
+  });
+
+  daysEl.addEventListener("change", (e) => {
+    if (e.target.type !== "checkbox") return;
+    state[e.target.id] = e.target.checked;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    updateAll(true);
+  });
+
+  const resetBtn = document.getElementById("reset-btn");
+  let confirming = false;
+  let confirmTimeout;
+  resetBtn.addEventListener("click", () => {
+    if (!confirming) {
+      confirming = true;
+      resetBtn.textContent = "Click again to confirm";
+      resetBtn.classList.add("confirming");
+      confirmTimeout = setTimeout(() => {
+        confirming = false;
+        resetBtn.textContent = "Start over";
+        resetBtn.classList.remove("confirming");
+      }, 3000);
+      return;
+    }
+    clearTimeout(confirmTimeout);
+    confirming = false;
+    resetBtn.textContent = "Start over";
+    resetBtn.classList.remove("confirming");
+    localStorage.removeItem(STORAGE_KEY);
+    document.querySelectorAll('input[type="checkbox"]').forEach(b => (b.checked = false));
+    for (const k in state) delete state[k];
+    document.querySelectorAll(".day").forEach(c => c.classList.remove("is-collapsed"));
+    updateAll(false);
+  });
+
+  const backdrop = document.getElementById("celebrate-backdrop");
+  const titleEl = document.getElementById("celebrate-title");
+  const bodyEl = document.getElementById("celebrate-body");
+  const iconEl = document.getElementById("celebrate-icon");
+  const btnEl = document.getElementById("celebrate-btn");
+
+  function celebrate(dayIndex) {
+    const day = PLAN[dayIndex];
+    if (day.finalDay) {
+      titleEl.textContent = "You built the whole system.";
+      iconEl.textContent = "🎉";
+      btnEl.textContent = "Done";
+    } else {
+      titleEl.textContent = "Step " + (dayIndex + 1) + " done!";
+      iconEl.textContent = "✨";
+      btnEl.textContent = "Keep going →";
+    }
+    bodyEl.textContent = day.celebrate;
+    backdrop.classList.add("show");
+    burstConfetti(day.finalDay);
+  }
+  function closeCelebrate() { backdrop.classList.remove("show"); }
+  document.getElementById("celebrate-close").addEventListener("click", closeCelebrate);
+  btnEl.addEventListener("click", closeCelebrate);
+  backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeCelebrate(); });
+
+  const canvas = document.getElementById("confetti-canvas");
+  const ctx = canvas.getContext("2d");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const CONFETTI_COLORS = ["#e579df", "#d5b9db", "#e8b34f", "#070605"];
+
+  function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  window.addEventListener("resize", resizeCanvas);
+  resizeCanvas();
+
+  let particles = [];
+  let animId = null;
+
+  function burstConfetti(big) {
+    if (reduceMotion) return;
+    particles = [];
+    const count = big ? 180 : 90;
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: canvas.width / 2 + (Math.random() - 0.5) * (big ? 220 : 120),
+        y: canvas.height * 0.35,
+        vx: (Math.random() - 0.5) * (big ? 11 : 9),
+        vy: -Math.random() * (big ? 11 : 9) - 4,
+        size: 5 + Math.random() * 5,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        rotation: Math.random() * 360,
+        vr: (Math.random() - 0.5) * 12,
+        gravity: 0.28 + Math.random() * 0.1,
+        life: 0
+      });
+    }
+    if (!animId) animId = requestAnimationFrame(tick);
+  }
+
+  function tick() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let alive = false;
+    particles.forEach(p => {
+      p.vy += p.gravity;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rotation += p.vr;
+      p.life++;
+      if (p.y < canvas.height + 40) alive = true;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.globalAlpha = Math.max(0, 1 - p.life / 160);
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+      ctx.restore();
+    });
+    if (alive) { animId = requestAnimationFrame(tick); }
+    else { ctx.clearRect(0, 0, canvas.width, canvas.height); particles = []; animId = null; }
+  }
+
+  updateAll(false);
+</script>
